@@ -78,23 +78,19 @@ void renderTimelinePanel(App& app) {
         ImPlot::SetupAxisLimits(ImAxis_Y1, 0.0, maxSharpness * 1.1, ImPlotCond_Once);
 
         // Style for sharpness line
-        ImPlot::PushStyleColor(ImPlotCol_Line, ImVec4(0.26f, 0.75f, 0.75f, 1.0f));
         ImPlot::PlotLine("Sharpness", times.data(), sharpness.data(),
-                         static_cast<int>(times.size()));
-        ImPlot::PopStyleColor();
+                         static_cast<int>(times.size()),
+                         ImPlotSpec(ImPlotProp_LineColor, ImVec4(0.26f, 0.75f, 0.75f, 1.0f)));
 
         // Style for selected frame markers
         if (!selectedTimes.empty()) {
-            ImPlot::PushStyleColor(ImPlotCol_MarkerFill, ImVec4(0.3f, 0.9f, 0.4f, 1.0f));
-            ImPlot::PushStyleColor(ImPlotCol_MarkerOutline, ImVec4(0.2f, 0.7f, 0.3f, 1.0f));
-            ImPlot::PushStyleVar(ImPlotStyleVar_MarkerSize, 8.0f);
-            ImPlot::PushStyleVar(ImPlotStyleVar_MarkerWeight, 2.0f);
-
             ImPlot::PlotScatter("Selected", selectedTimes.data(), selectedSharpness.data(),
-                               static_cast<int>(selectedTimes.size()));
-
-            ImPlot::PopStyleVar(2);
-            ImPlot::PopStyleColor(2);
+                               static_cast<int>(selectedTimes.size()),
+                               ImPlotSpec(ImPlotProp_Marker, ImPlotMarker_Circle,
+                                          ImPlotProp_MarkerSize, 8.0f,
+                                          ImPlotProp_MarkerFillColor, ImVec4(0.3f, 0.9f, 0.4f, 1.0f),
+                                          ImPlotProp_LineWeight, 2.0f,
+                                          ImPlotProp_MarkerLineColor, ImVec4(0.2f, 0.7f, 0.3f, 1.0f)));
         }
 
         // Visualize search window during analysis
@@ -106,42 +102,34 @@ void renderTimelinePanel(App& app) {
             double windowX[4] = {searchState.windowStart, searchState.windowEnd,
                                  searchState.windowEnd, searchState.windowStart};
             double windowY[4] = {0, 0, yMax, yMax};
-            ImPlot::PushStyleColor(ImPlotCol_Fill, ImVec4(1.0f, 0.8f, 0.2f, 0.15f));
-            ImPlot::PlotShaded("##searchWindow", windowX, windowY, 4);
-            ImPlot::PopStyleColor();
+            ImPlot::PlotShaded("##searchWindow", windowX, windowY, 4, 0,
+                               ImPlotSpec(ImPlotProp_FillColor, ImVec4(1.0f, 0.8f, 0.2f, 0.15f)));
 
             // Draw window boundaries
             double boundX1[2] = {searchState.windowStart, searchState.windowStart};
             double boundX2[2] = {searchState.windowEnd, searchState.windowEnd};
             double boundY[2] = {0, yMax};
-            ImPlot::PushStyleColor(ImPlotCol_Line, ImVec4(1.0f, 0.8f, 0.2f, 0.6f));
-            ImPlot::PushStyleVar(ImPlotStyleVar_LineWeight, 1.5f);
-            ImPlot::PlotLine("##winStart", boundX1, boundY, 2);
-            ImPlot::PlotLine("##winEnd", boundX2, boundY, 2);
-            ImPlot::PopStyleVar();
-            ImPlot::PopStyleColor();
+            ImPlot::PlotLine("##winStart", boundX1, boundY, 2,
+                             ImPlotSpec(ImPlotProp_LineColor, ImVec4(1.0f, 0.8f, 0.2f, 0.6f), ImPlotProp_LineWeight, 1.5f));
+            ImPlot::PlotLine("##winEnd", boundX2, boundY, 2,
+                             ImPlotSpec(ImPlotProp_LineColor, ImVec4(1.0f, 0.8f, 0.2f, 0.6f), ImPlotProp_LineWeight, 1.5f));
 
             // Draw current search position
             double searchX[2] = {searchState.currentSearchTime, searchState.currentSearchTime};
             double searchY[2] = {0, yMax};
-            ImPlot::PushStyleColor(ImPlotCol_Line, ImVec4(1.0f, 0.4f, 0.1f, 0.9f));
-            ImPlot::PushStyleVar(ImPlotStyleVar_LineWeight, 2.0f);
-            ImPlot::PlotLine("##searchPos", searchX, searchY, 2);
-            ImPlot::PopStyleVar();
-            ImPlot::PopStyleColor();
+            ImPlot::PlotLine("##searchPos", searchX, searchY, 2,
+                             ImPlotSpec(ImPlotProp_LineColor, ImVec4(1.0f, 0.4f, 0.1f, 0.9f), ImPlotProp_LineWeight, 2.0f));
 
             // Draw current best found (if any)
             if (searchState.bestSharpness > 0) {
                 double bestX[1] = {searchState.bestTime};
                 double bestY[1] = {searchState.bestSharpness};
-                ImPlot::PushStyleColor(ImPlotCol_MarkerFill, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
-                ImPlot::PushStyleColor(ImPlotCol_MarkerOutline, ImVec4(1.0f, 0.5f, 0.5f, 1.0f));
-                ImPlot::PushStyleVar(ImPlotStyleVar_MarkerSize, 10.0f);
-                ImPlot::PushStyleVar(ImPlotStyleVar_MarkerWeight, 2.0f);
-                ImPlot::SetNextMarkerStyle(ImPlotMarker_Diamond);
-                ImPlot::PlotScatter("##bestFound", bestX, bestY, 1);
-                ImPlot::PopStyleVar(2);
-                ImPlot::PopStyleColor(2);
+                ImPlot::PlotScatter("##bestFound", bestX, bestY, 1,
+                                   ImPlotSpec(ImPlotProp_Marker, ImPlotMarker_Diamond,
+                                              ImPlotProp_MarkerSize, 10.0f,
+                                              ImPlotProp_MarkerFillColor, ImVec4(1.0f, 0.2f, 0.2f, 1.0f),
+                                              ImPlotProp_LineWeight, 2.0f,
+                                              ImPlotProp_MarkerLineColor, ImVec4(1.0f, 0.5f, 0.5f, 1.0f)));
             }
         }
 
@@ -167,11 +155,8 @@ void renderTimelinePanel(App& app) {
             // Draw vertical indicator line at cursor
             double indicatorY[2] = {0.0, maxSharpness * 1.1};
             double indicatorX[2] = {hoveredTime, hoveredTime};
-            ImPlot::PushStyleColor(ImPlotCol_Line, ImVec4(1.0f, 1.0f, 1.0f, 0.5f));
-            ImPlot::PushStyleVar(ImPlotStyleVar_LineWeight, 1.0f);
-            ImPlot::PlotLine("##indicator", indicatorX, indicatorY, 2);
-            ImPlot::PopStyleVar();
-            ImPlot::PopStyleColor();
+            ImPlot::PlotLine("##indicator", indicatorX, indicatorY, 2,
+                             ImPlotSpec(ImPlotProp_LineColor, ImVec4(1.0f, 1.0f, 1.0f, 0.5f), ImPlotProp_LineWeight, 1.0f));
 
             // Left-click: toggle selection on nearby marker
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {

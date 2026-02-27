@@ -269,18 +269,12 @@ void renderControlPanel(App& app) {
         ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 100, ImPlotCond_Always);
 
         // CPU line (cyan)
-        ImPlot::PushStyleColor(ImPlotCol_Line, ImVec4(0.4f, 0.8f, 1.0f, 1.0f));
-        ImPlot::PushStyleVar(ImPlotStyleVar_LineWeight, 1.5f);
-        ImPlot::PlotLine("CPU", xAxis.data(), cpuPlot.data(), PerfStats::HISTORY_SIZE);
-        ImPlot::PopStyleVar();
-        ImPlot::PopStyleColor();
+        ImPlot::PlotLine("CPU", xAxis.data(), cpuPlot.data(), PerfStats::HISTORY_SIZE,
+            ImPlotSpec(ImPlotProp_LineColor, ImVec4(0.4f, 0.8f, 1.0f, 1.0f), ImPlotProp_LineWeight, 1.5f));
 
         // GPU line (green)
-        ImPlot::PushStyleColor(ImPlotCol_Line, ImVec4(0.4f, 1.0f, 0.5f, 1.0f));
-        ImPlot::PushStyleVar(ImPlotStyleVar_LineWeight, 1.5f);
-        ImPlot::PlotLine("GPU", xAxis.data(), gpuPlot.data(), PerfStats::HISTORY_SIZE);
-        ImPlot::PopStyleVar();
-        ImPlot::PopStyleColor();
+        ImPlot::PlotLine("GPU", xAxis.data(), gpuPlot.data(), PerfStats::HISTORY_SIZE,
+            ImPlotSpec(ImPlotProp_LineColor, ImVec4(0.4f, 1.0f, 0.5f, 1.0f), ImPlotProp_LineWeight, 1.5f));
 
         ImPlot::EndPlot();
     }
